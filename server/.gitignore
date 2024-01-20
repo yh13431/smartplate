@@ -1,2 +1,4 @@
 venv
 .env
+epi_r.csv
+__pycache__/

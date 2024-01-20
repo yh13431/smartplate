@@ -3,6 +3,8 @@ import requests
 from dotenv import load_dotenv
 import os
 from flask_cors import CORS
+from recommend import recommend_recipe_names
+
 
 load_dotenv()
 
@@ -30,9 +32,6 @@ def get_nutrients():
         
         # Return data
         if response.status_code == 200:
-            """ data = response.json()
-            return jsonify(data) """
-
             nutrition_data = response.json().get('foods', [])
             formatted_response = format_nutrition_facts(nutrition_data)
             return jsonify(formatted_response)   
@@ -74,7 +73,17 @@ def format_nutrition_facts(food_items):
     }
     return {"foods": formatted_data, "totals": totals}
  
- 
+
+
+
+@app.route('/recipes', methods=['POST'])
+def recommend_recipes_endpoint():
+    user_input = request.json
+    recommended_recipes = recommend_recipe_names(user_input)
+    print("Recommended recipes:", recommended_recipes)
+    return jsonify({'recipes': recommended_recipes})
+
+
 
 if __name__ == '__main__':
     app.run(debug=True)
