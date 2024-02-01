@@ -1,78 +1,97 @@
 from flask import Flask, jsonify, request
-import requests
 from dotenv import load_dotenv
-import os
 from flask_cors import CORS
 from recommend import recommend_recipe_names
+from nutrients import get_nutrients
+from pymongo import MongoClient
+import os
+from recipe_routes import get_database, save_user_info, save_recipe, get_user_recipes, delete_recipe, get_all_user_ids
 
 
 load_dotenv()
-
 app = Flask(__name__)
-CORS(app, origins='http://localhost:3000')
+CORS(app, resources={r"/*": {"origins": "http://localhost:3000"}})
+def get_database():
+    MONGO_URI = os.getenv("MONGO_URI")
+    client = MongoClient(MONGO_URI)
+    return client['savedrecipes']
+
+
+
+
+@app.route('/get-all-user-ids', methods=['GET'])
+def get_all_user_ids_route():
+    try:
+        user_ids = get_all_user_ids()
+        return jsonify({'userIds': user_ids})
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+    
+@app.route('/save-user-id', methods=['POST'])
+def save_user_id():
+    try:
+        data = request.json
+        user_id = data.get('email')
+
+        if user_id:
+            save_user_info(user_id)
+            return jsonify({'message': 'User ID saved successfully'})
+        else:
+            return jsonify({'error': 'Invalid request data'}), 400
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+    
+@app.route('/get-user-recipes', methods=['GET'])
+def get_user_recipes_route():
+    try:
+        user_id = request.args.get('userId')
+
+        if user_id:
+            recipes = get_user_recipes(user_id)
+            return jsonify({'recipes': recipes})
+        else:
+            return jsonify({'error': 'User ID not provided in query parameters'}), 400
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/save-recipe', methods=['POST'])
+def save_recipe_route():
+    try:
+        data = request.json
+        user_id = data.get('userId')
+        recipe = data.get('recipe')
+
+        if user_id and recipe:
+            save_recipe(user_id, recipe)
+            return jsonify({'message': 'Recipe saved successfully'})
+        else:
+            return jsonify({'error': 'Invalid request data'}), 400
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/delete-recipe', methods=['DELETE'])
+def delete_recipe_route():
+    try:
+        data = request.json
+        user_id = data.get('userId')
+        recipe = data.get('recipe')
+
+        if user_id and recipe:
+            delete_recipe(user_id, recipe)
+            return jsonify({'message': 'Recipe deleted successfully'})
+        else:
+            return jsonify({'error': 'Invalid request data'}), 400
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+
 
 @app.route('/get_nutrients', methods=['POST'])
-def get_nutrients():
-    try:
-        # get input data
-        data = request.get_json()
-        ingredients_query = data.get('query')
-        
-        # API endpoint and request payload
-        api_url = 'https://trackapi.nutritionix.com/v2/natural/nutrients'
-        headers = {
-            'Content-Type': 'application/json',
-            'x-app-id': os.getenv('NUTRITIONIX_APP_ID'),
-            'x-app-key': os.getenv('NUTRITIONIX_APP_KEY'),
-        }
-        payload = {"query": ingredients_query}
+def get_nutrients_endpoint():
+    return get_nutrients()
 
-        # API call
-        response = requests.post(api_url, headers=headers, json=payload)
-        
-        # Return data
-        if response.status_code == 200:
-            nutrition_data = response.json().get('foods', [])
-            formatted_response = format_nutrition_facts(nutrition_data)
-            return jsonify(formatted_response)   
-        else:
-            return jsonify({"error": f"Error {response.status_code}: {response.text}"}), response.status_code
-    except Exception as e:
-        return jsonify({"error": f"Internal Server Error: {str(e)}"}), 500
-
-
-
-# get macros and return to frontend
-def format_nutrition_facts(food_items):
-    formatted_data = []
-    total_calories = 0
-    total_protein = 0
-    total_carbohydrates = 0
-    total_fats = 0
-
-    for item in food_items:
-        formatted_item = {
-            "food_name": item.get("food_name"),
-            "servings": item.get("serving_qty"),
-            "calories": item.get("nf_calories"),
-            "protein": item.get("nf_protein"),
-            "carbohydrates": item.get("nf_total_carbohydrate"),
-            "fats": item.get("nf_total_fat")
-        }
-        total_calories += formatted_item["calories"]
-        total_protein += formatted_item["protein"]
-        total_carbohydrates += formatted_item["carbohydrates"]
-        total_fats += formatted_item["fats"]
-        formatted_data.append(formatted_item)
-
-    totals = {
-        "total_calories": total_calories,
-        "total_protein": total_protein,
-        "total_carbohydrates": total_carbohydrates,
-        "total_fats": total_fats
-    }
-    return {"foods": formatted_data, "totals": totals}
- 
 
 
 
@@ -85,5 +104,7 @@ def recommend_recipes_endpoint():
 
 
 
+
 if __name__ == '__main__':
+    saved_db = get_database()
     app.run(debug=True)

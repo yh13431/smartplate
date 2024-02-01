@@ -3,13 +3,24 @@ import ReactLoading from 'react-loading';
 import { useSession } from 'next-auth/react';
 import Image from 'next/image';
 
+
+interface Recipe {
+  title: string;
+  calories: number;
+  protein: number;
+  fat: number;
+}
+
+
+
 export default function Recommend() {
   const [ recipes, setRecipes ] = useState<any[]>([]);
   const [calories, setCalories] = useState<string>('');
   const [protein, setProtein] = useState<string>('');
   const [fat, setFat] = useState<string>('');
   const [loading, setLoading] = useState(false); 
-  const { data: session } = useSession();
+  const { data: session, status } = useSession();
+  const userId = session?.user?.email
 
 
   const handleSearch = async () => {
@@ -37,6 +48,34 @@ export default function Recommend() {
     } catch (error) {
         console.error('Fetch error:', error);
         setRecipes([]);
+    } finally {
+        setLoading(false);
+    }
+  };
+
+
+  const handleSave = async (recipe: Recipe) => {
+    try {
+      setLoading(true);
+      const response = await fetch('http://localhost:5000/save-recipe', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          userId: userId,
+          recipe: recipe,
+        })
+      });
+
+      if (!response.ok) {
+        throw new Error(`Status: ${response.status}`);
+      }
+  
+      const data = await response.json();
+      console.log('Saved recipe');
+    } catch (error) {
+        console.error('Save error:', error);
     } finally {
         setLoading(false);
     }
@@ -109,10 +148,11 @@ export default function Recommend() {
               <table className="min-w-full bg-gray-200 border border-gray-300 divide-y divide-gray-300 text-xl">
                 <thead className="bg-gray-300">
                   <tr>
-                    <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Recipe</th>
-                    <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Calories</th>
-                    <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Protein</th>
-                    <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Fat</th>
+                    <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Your Recipes</th>
+                    <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Calories (kCal)</th>
+                    <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Protein (g)</th>
+                    <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Fat (g)</th>
+                    <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Save Recipe</th>
                   </tr>
                 </thead>
                 <tbody className="bg-white divide-y divide-gray-200">
@@ -123,6 +163,17 @@ export default function Recommend() {
                         <td className="px-8 py-4">{recipe.calories}</td>
                         <td className="px-8 py-4">{recipe.protein}</td>
                         <td className="px-8 py-4">{recipe.fat}</td>
+                        <td className="px-8 py-4">
+                          <button
+                            className={`bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded transition duration-300 transition-transform duration-300 ease-in-out transform hover:scale-110 mt-4 mb-4 ${
+                              !session ? 'cursor-not-allowed opacity-50' : ''
+                            }`}
+                              onClick={() => handleSave(recipe)}
+                              disabled={!session || loading}
+                          >
+                            {loading ? 'Saving...' : session ? 'Save' : 'Log In to Save'}
+                          </button>
+                        </td>
                       </tr>
                     ))}
                 </tbody>

@@ -18,7 +18,7 @@ const services = [
     title: 'Save Desired Recipes',
     description: 'Keep your favorite recipes organized and accessible. Save and revisit your desired recipes effortlessly, making meal planning a delightful and efficient experience.',
     icon: 'heart',
-    link: '/saved'
+    link: '/recipes'
   },
 ];
 

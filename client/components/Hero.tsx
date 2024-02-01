@@ -6,8 +6,8 @@ const Hero = () => {
       <div className="flex flex-col items-center justify-center h-screen">
         <Image src="/hero.jpg" alt="hero" layout="fill" objectFit="cover"/>
         <div className="relative z-8 text-center text-white">
-          <h1 className="text-7xl font-extrabold mb-4">SmartPlate</h1>
-          <p className="text-lg mb-8">Discover the simplicity of healthy eating</p>
+          <h1 className="text-9xl font-extrabold mb-4">SmartPlate</h1>
+          <p className="text-2xl mb-8">Discover the simplicity of healthy eating</p>
         </div>
       </div>
     );
