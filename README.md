@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="https://github.com/yh13431/smartplate/assets/106964833/df979b94-c0b7-4872-9580-d90ae26d3525"/>
+  <img src="https://github.com/yh13431/smartplate/assets/106964833/df979b94-c0b7-4872-9580-d90ae26d3525" width="300" height="300"/>
   <h3 align="center">SmartPlate</h3>
   <p align="center">
     Full stack TypeScript and Python web application for nutrition tracking
