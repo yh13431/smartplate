@@ -76,7 +76,7 @@ export default function Saved() {
       setDeletingRecipe(recipe);
       setLoading(true);
       const response = await fetch('http://localhost:5000/delete-recipe', {
-        method: 'POST',
+        method: 'DELETE',
         headers: {
           'Content-Type': 'application/json',
         },

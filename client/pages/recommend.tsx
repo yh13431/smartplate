@@ -84,31 +84,21 @@ export default function Recommend() {
 
 
   return (
-      <div className={`min-h-screen flex items-center justify-center bg-gray-600 ${loading ? 'opacity-20' : ''}`}>
+      <div className={`min-h-screen flex items-center justify-center bg-gray-600 ${loading ? 'opacity-20' : ''}`}  style={{ backgroundImage: `url("/recommend.jpg")`, backgroundSize: 'cover', backgroundPosition: 'center' }}>
         {loading && (
             <div className="loading-overlay w-full h-full flex items-center justify-center absolute top-0 left-0">
                 <ReactLoading type="spin" color="#000" height={50} width={50} />
             </div>
         )}
-        <div className="flex-shrink-0" style={{ flexBasis: '800px', minWidth: '500px' }}>
-            <Image
-                src="/recommend.jpg"
-                alt="Background Image"
-                layout="fixed"
-                width={1000}
-                height={800}
-                objectFit="cover"
-            />
-        </div>
       <div className='flex-grow grid grid-rows-auto p-40 mb-50'>
         <div className="text-center">
-            <h1 className="text-7xl font-bold mb-8 text-gray-100">Need Recipe Ideas?</h1>
-            <h3 className="text-2xl mb-8 text-gray-100">Enter your target macros and search away!</h3>
+            <h1 className="text-8xl font-bold mb-8 text-black-100">Need Recipe Ideas?</h1>
+            <h3 className="text-3xl mb-8 text-black-100">Enter your target macros and search away!</h3>
             <div className='mb-4'>
               <input
                 type="number"
                 min="1"
-                className="mt-1 p-2 border rounded-md w-full md:w-80 bg-gray-100"
+                className="mt-1 p-2 border rounded-md w-full md:w-80 bg-gray"
                 value={calories}
                 placeholder='Calories (kcal)'
                 onChange={e => setCalories(e.target.value)}
@@ -118,7 +108,7 @@ export default function Recommend() {
               <input
                 type="number"
                 min="1"
-                className="mt-1 p-2 border rounded-md w-full md:w-80 bg-gray-100"
+                className="mt-1 p-2 border rounded-md w-full md:w-80 bg-gray"
                 value={protein}
                 placeholder='Protein (g)'
                 onChange={e => setProtein(e.target.value)}
@@ -128,7 +118,7 @@ export default function Recommend() {
               <input
                 type="number"
                 min="1"
-                className="mt-1 p-2 border rounded-md w-full md:w-80 bg-gray-100"
+                className="mt-1 p-2 border rounded-md w-full md:w-80 bg-gray"
                 value={fat}
                 placeholder='Fat (g)'
                 onChange={e => setFat(e.target.value)}
@@ -150,12 +140,12 @@ export default function Recommend() {
                   <tr>
                     <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Your Recipes</th>
                     <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Calories (kCal)</th>
-                    <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Protein (g)</th>
+                    <th className="px-4 py-2 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Protein (g)</th>
                     <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Fat (g)</th>
                     <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Save Recipe</th>
                   </tr>
                 </thead>
-                <tbody className="bg-white divide-y divide-gray-200">
+                <tbody className="bg-gray divide-y divide-gray-200">
                   {recipes && Array.isArray(recipes) &&
                     recipes.map((recipe, index) => (
                       <tr key={index} className="text-gray-800">
