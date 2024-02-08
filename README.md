@@ -1,5 +1,5 @@
 <p align="center">
-  ![foodlogo](https://github.com/yh13431/smartplate/assets/106964833/df979b94-c0b7-4872-9580-d90ae26d3525)<br/>
+  <img src="https://github.com/yh13431/smartplate/assets/106964833/df979b94-c0b7-4872-9580-d90ae26d3525"/>
   <h3 align="center">SmartPlate</h3>
   <p align="center">
     Full stack TypeScript and Python web application for nutrition tracking
