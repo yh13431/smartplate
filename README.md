@@ -22,7 +22,7 @@
 
 ## About The Project
 
-This application was created to help myself with calorie tracking and also to give myself ideas on what to make with the various food items lying around at home, within my caloric budget.
+This application was created to help myself with my macronutrient tracking, and also try out new recipes that are within my caloric budget.
 
 
 https://github.com/yh13431/smartplate/assets/106964833/b7008d55-f5b9-4a0b-ba3e-1c844e486f39
