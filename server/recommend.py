@@ -1,28 +1,30 @@
 import pandas as pd
 from sklearn.metrics.pairwise import cosine_similarity
-from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.preprocessing import StandardScaler
 
 recipes_df = pd.read_csv('epi_r.csv')
 
 def recommend_recipe_names(user_input):
-    filtered_recipes = recipes_df[
-        (recipes_df['calories'] <= user_input['calories']) &
-        (recipes_df['protein'] <= user_input['protein']) &
-        (recipes_df['fat'] <= user_input['fat'])
-    ]
+    # vectorise inputted macronutrients
+    user_vector = [[user_input['calories'], user_input['protein'], user_input['fat']]]
 
-    # convert recipe names to vectors
-    vectorizer = TfidfVectorizer()
-    name_vectors = vectorizer.fit_transform(filtered_recipes['title'])
+    # vectorise macronutrients of recipes from dataset
+    recipes_vectors = recipes_df[['calories', 'protein', 'fat']].values
+    
+    # standardise macronutrient data and user input
+    scaler = StandardScaler()
+    recipes_vectors_scaled = scaler.fit_transform(recipes_vectors)
+    user_vector_scaled = scaler.transform(user_vector)
 
-    # calculate cosine similarity between user input and recipes
-    user_vector = vectorizer.transform([f"{user_input['calories']} {user_input['protein']} {user_input['fat']}"])
-    similarities = cosine_similarity(user_vector, name_vectors).flatten()
+    # compute cosine similarity between the user input and each recipe vector
+    similarities = cosine_similarity(user_vector_scaled, recipes_vectors_scaled).flatten()
 
-    # get indices of top similar recipes
-    top_indices = similarities.argsort()[-5:]
+    # get indices of top 5 most similar recipes
+    top_indices = similarities.argsort()[-5:][::1]
 
-    # return recommended recipe names
-    recommended_recipe_names = filtered_recipes.iloc[top_indices][['title', 'calories', 'protein', 'fat']].to_dict(orient='records')
+    # return recommended recipe names and their macronutrient values
+    recommend_recipe_names = recipes_df.iloc[top_indices][['title', 'calories', 'protein', 'fat']].to_dict(orient='records')
+    if not recommend_recipe_names:
+        return [{'message': 'No recipes match the criteria'}]
 
-    return recommended_recipe_names
+    return recommend_recipe_names
